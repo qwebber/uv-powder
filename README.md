@@ -8,10 +8,8 @@
 
 This repository contains the code accompanying the paper “Personality affects
 transmission and acquisition of a proxy pathogen in little brown bats”. Scripts
-are under `scripts/`.  This project uses standard R package structure and can
-therefore be installed with `devtools`. Input data are under `input/` and data
-generated for subsequent analyses are under `output/`. This also helps declare
-external package dependencies required for the analysis.
+are under `scripts/`.  Input data are under `input/` and data
+generated for subsequent analyses are under `output/`.
 
 ## Abstract
 
