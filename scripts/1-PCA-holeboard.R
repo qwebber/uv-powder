@@ -1,6 +1,7 @@
 library(data.table)
 library(Rfast)
 
+
 hb <- fread("input/PCA raw/holeboard.csv")
 str(hb)
 
