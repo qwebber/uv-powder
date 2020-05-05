@@ -1,0 +1,21 @@
+
+
+## Personality affects transmission and acquisition of a proxy pathogen in little brown bats
+
+[![DOI](https://zenodo.org/badge/173167283.svg)](https://zenodo.org/badge/latestdoi/173167283)
+
+  - Authors:
+      - [Quinn M.R. Webber](https://qwebber.weebly.com/)
+      - [Craig K.R. Willis](https://sites.google.com/site/erinlkoen/)
+
+This repository contains the code accompanying the paper “Space-use and
+social organization in a gregarious ungulate: testing the conspecific
+attraction and resource dispersion”. Scripts are under `scripts/` and
+reused functions are in `R/`. This project uses standard R package
+structure and can therefore be installed with `devtools`. This also
+helps declare external package dependencies required for the analysis.
+Please note that while functions are included here, they are not tested
+for use in other projects and may not be suitable (at least not in their
+current version).
+
+## Abstract
