@@ -2,6 +2,8 @@
 
 ## Personality affects transmission and acquisition of a proxy pathogen in little brown bats
 
+[![DOI](https://zenodo.org/badge/261560087.svg)](https://zenodo.org/badge/latestdoi/261560087)
+
   - Authors:
       - [Quinn M.R. Webber](https://qwebber.weebly.com/)
       - [Craig K.R. Willis](http://www.willisbatlab.org/)
