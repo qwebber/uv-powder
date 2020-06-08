@@ -2,12 +2,28 @@
 
 library(data.table)
 library(ggplot2)
+library(lmerTest)
+library(piecewiseSEM)
+library(simr)
 
 dust <- fread("output/all.bats.csv")
 
 
 allMod = lmer(log(total.inf) ~ sex + soc_ym  + act_ym + exp_hb + act_hb + dawn.ta + (1|Trial), 
           data = dust)
+
+r2.corr.mer <- function(m) {
+  lmfit <-  lm(model.response(model.frame(m)) ~ fitted(m))
+  summary(lmfit)$r.squared
+}
+
+r2.corr.mer(allMod)
+1-var(residuals(allMod))/(var(model.response(model.frame(allMod))))
+
+power <- powerSim(allMod,nsim = 200)
+
+
+
 Vcov <- vcov(allMod, useScale = FALSE)
 betas <- fixef(allMod)
 se <- sqrt(diag(Vcov))
