@@ -11,7 +11,7 @@ library(outliers)
 M1 = lm(log(total.inf.M) ~ sex + act_hb + exp_hb + act_ym  + soc_ym + min.ta, data = p.zero)
 summary(M1)
 
-estM1<-Effect("exp_hb", partial.residuals=T, M1)
+estM1 <- Effect("exp_hb", partial.residuals=T, M1)
 predM1 <- data.table(inf = estM1$fit, 
                      exp = estM1$x, 
                      lwr = estM1$lower,
