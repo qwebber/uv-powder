@@ -1,108 +1,71 @@
 
 
-library(lme4)
 library(data.table)
 library(ggplot2)
-library(effects)
 library(gridExtra)
-library(outliers)
+library(effects)
 
-### PATIENT ZERO ANALYSIS
-M1 = lm(log(total.inf.M) ~ sex + act_hb + exp_hb + act_ym  + soc_ym + min.ta, data = p.zero)
-summary(M1)
-
-estM1 <- Effect("exp_hb", partial.residuals=T, M1)
-predM1 <- data.table(inf = estM1$fit, 
-                     exp = estM1$x, 
-                     lwr = estM1$lower,
-                     upr = estM1$upper)
-colnames(predM1) <- c("inf", "exp", "lwr", "upr")
-
-
-### ACQUISITION ANALYSIS #####
 dust <- fread("output/all.bats.csv")
 
-FFdf <- dust[sex == "F" & sex_pz == "F"] #& exp_hb < 4]
-FF = lmer(log(total.inf) ~ soc_ym  + act_ym + exp_hb + act_hb + dawn.ta + (1|Trial), 
-          data = FFdf)
-summary(FF)
 
-grubbs.test(FFdf$exp_hb, type = 10, opposite = FALSE, two.sided = FALSE)
+allMod = lmer(log(total.inf) ~ sex*soc_ym  + act_ym + sex*exp_hb + act_hb + dawn.ta + (1|Trial), 
+          data = dust)
 
-estF<-Effect("exp_hb", partial.residuals=T, FF)
-predF <- data.table(inf = estF$fit, 
-                   exp = estF$x, 
-                   lwr = estF$lower,
-                   upr = estF$upper)
-colnames(predF) <- c("inf", "exp", "lwr", "upr")
+summary(allMod)
 
-MMdf <- dust[sex == "M" & sex_pz == "M"]
-MM = lmer(log(total.inf) ~ soc_ym  + act_ym + exp_hb + act_hb + dawn.ta + (1|Trial), 
-          data = MMdf)
-
-grubbs.test(MMdf$soc_ym, type = 10, opposite = FALSE, two.sided = FALSE)
+ggplot(dust, aes(exp_hb, log(total.inf), color = sex)) +
+  geom_point() +
+  geom_smooth(method = "lm")
 
 
-estM<-Effect("soc_ym", partial.residuals=T, MM)
-predM <- data.table(inf = estM$fit, 
-                    soc = estM$x, 
-                    lwr = estM$lower,
-                    upr = estM$upper)
-colnames(predM) <- c("inf", "soc", "lwr", "upr")
+estMod<-Effect(c("sex", "exp_hb"), partial.residuals = T, allMod)
+predMod <- data.table(inf = estMod$fit, 
+                     exp = estMod$x, 
+                     lwr = estMod$lower,
+                     upr = estMod$upper)
+colnames(predMod) <- c("inf","Sex" ,"exp", "lwr", "upr")
 
-a1 <- lmer (log(total.inf) ~ sex*sex_pz + soc_ym  + act_ym + exp_hb + act_hb + dawn.ta + (1|Trial)
-            , data = dust)
-summary(a1)
+#labs(x = expression(paste("Ambient Temperature at Dawn (",degree~C,")"))) +
 
-ggplot(dust) +
-  geom_boxplot(aes(sex, total.inf), notch = T) +
-  facet_wrap(~sex_pz)
 
-png("figures/Figure1.png", width = 5000, height = 2000, units = "px", res = 600)
-aa <- ggplot(p.zero, aes(exp_hb, log(total.inf.M))) +
-  geom_point(alpha = 0.25) +
-  geom_line(data = predM1, aes(exp, inf), lty = 1, size = 1) +
-  geom_line(data = predM1, aes(exp, lwr), lty = 2) +
-  geom_line(data = predM1, aes(exp, upr), lty = 2) +
-  ggtitle("A) Males (Transmission)") +
-  ylab("log(Average Infection Intensity)") +
-  xlab(expression("Exploration PC2" [H], ")" )) +
-  theme(legend.position = 'none', 
-        axis.title = element_text(size = 14, color = 'black'),
-        axis.text = element_text(size = 12, color = 'black'),
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(), 
-        panel.border = element_rect(colour = "black", fill=NA, size = 1))
-bb <- ggplot(dust[sex == "F" & sex_pz == "F"],
-       aes(exp_hb, log(total.inf))) +
-  geom_point(alpha = 0.25) +
-  geom_line(data = predF, aes(exp, inf), lty = 1, size = 1) +
-  geom_line(data = predF, aes(exp, lwr), lty = 2) +
-  geom_line(data = predF, aes(exp, upr), lty = 2) +
+col = c("#1b9e77", "#1f78b4")
+
+png("figures/Figure1.png", width = 5000, height = 2500, units = "px", res = 600)
+aa <- ggplot() +
+  geom_point(data = dust[sex == "F"], aes(exp_hb, log(total.inf), col = "#1b9e77"), alpha = 0.5) +
+  geom_line(data = predMod[Sex == "F"], aes(exp, inf, col = "#1b9e77"), lty = 1, size = 1.25) +
+  geom_line(data = predMod[Sex == "F"], aes(exp, upr, col = "#1b9e77"), lty = 2, size = 0.5) +
+  geom_line(data = predMod[Sex == "F"], aes(exp, lwr, col = "#1b9e77"), lty = 2, size = 0.5) +
   ylab("log(Infection Intensity)") +
   xlab(expression("Exploration PC2" [H], ")" )) +
-  ggtitle("B) Females (Acquisition)") +
-  theme(legend.position = 'none', 
+  scale_color_manual(values = "#1b9e77") +
+  ylim(-6.5, 0) +
+  ggtitle("A) Females") +
+  #labs(x = expression(paste("Ambient Temperature at Dawn (",degree~C,")"))) +
+  theme(legend.position = 'none',
+        legend.key = element_blank(),
         axis.title = element_text(size = 14, color = 'black'),
         axis.text = element_text(size = 12, color = 'black'),
         panel.grid.minor = element_blank(),
         panel.background = element_blank(), 
         panel.border = element_rect(colour = "black", fill=NA, size = 1))
-  
-cc <- ggplot(dust[sex == "M" & sex_pz == "M"],
-               aes(soc_ym, log(total.inf))) +
-    geom_point(alpha = 0.25) +
-    geom_line(data = predM, aes(soc, inf), lty = 1, size = 1) +
-    geom_line(data = predM, aes(soc, lwr), lty = 2) +
-    geom_line(data = predM, aes(soc, upr), lty = 2) +
-    ylab("log(Infection Intensity)") +
-    xlab(expression("Sociability PC2" [Y], ")" )) +
-    ggtitle("C) Males (Acquisition)") +
-  theme(legend.position = 'none', 
+bb <- ggplot() +
+  geom_point(data = dust[sex == "M"], aes(exp_hb, log(total.inf), col = "#1f78b4"), alpha = 0.5) +
+  geom_line(data = predMod[Sex == "M"], aes(exp, inf, col = "#1f78b4"), lty = 1, size = 1.25) +
+  geom_line(data = predMod[Sex == "M"], aes(exp, upr, col = "#1f78b4"), lty = 2, size = 0.5) +
+  geom_line(data = predMod[Sex == "M"], aes(exp, lwr, col = "#1f78b4"), lty = 2, size = 0.5) +
+  ylab("log(Infection Intensity)") +
+  xlab(expression("Exploration PC2" [H], ")" )) +
+  #labs(x = expression(paste("Ambient Temperature at Dawn (",degree~C,")"))) +
+  scale_color_manual(values = "#1f78b4") +
+  ggtitle("B) Males") +
+  ylim(-6.5, 0) +
+  theme(legend.position = 'none',
+        legend.key = element_blank(),
         axis.title = element_text(size = 14, color = 'black'),
         axis.text = element_text(size = 12, color = 'black'),
         panel.grid.minor = element_blank(),
         panel.background = element_blank(), 
         panel.border = element_rect(colour = "black", fill=NA, size = 1))
-grid.arrange(aa,bb,cc, nrow = 1)
+grid.arrange(aa,bb,nrow = 1)
 dev.off()
