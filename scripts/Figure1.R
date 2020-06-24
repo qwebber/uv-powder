@@ -7,6 +7,7 @@ library(effects)
 
 dust <- fread("output/all.bats.csv")
 
+dust[, .N, by = "sex"]
 
 allMod = lmer(log(total.inf) ~ sex*soc_ym  + act_ym + sex*exp_hb + act_hb + dawn.ta + (1|Trial), 
           data = dust)
