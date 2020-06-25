@@ -4,13 +4,17 @@ library(data.table)
 library(ggplot2)
 library(gridExtra)
 library(lme4)
+library(car)
 
 dust <- fread("output/all.bats.csv")
-
 
 allMod = lmer(log(total.inf) ~ sex*soc_ym  + sex*act_ym + 
                 sex*exp_hb + sex*act_hb + dawn.ta + (1|Trial), 
               data = dust)
+
+df <- dust[,c("sex", "soc_ym", "act_ym", "exp_hb", "act_hb", "dawn.ta")]
+
+car::vif(allMod)
 
 summary(allMod)
 
