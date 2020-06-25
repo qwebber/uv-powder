@@ -105,7 +105,7 @@ theme1 <- theme(legend.position = 'none',
                 panel.border = element_rect(colour = "black", fill=NA, size = 1))
 
 # plot permutation test results (red is observed, blue is expected)----
-#png("figures/FigureS3.png", width = 6000, height = 3000, units = "px", res = 600)
+png("figures/FigureS3.png", width = 7000, height = 3500, units = "px", res = 600)
 aa <- ggplot() +
   geom_histogram(data = exp[coef == "Sex"], 
                  aes(x = fit), color="black",fill="light grey") +
