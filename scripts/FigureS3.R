@@ -3,11 +3,13 @@
 library(data.table)
 library(ggplot2)
 library(gridExtra)
+library(lme4)
 
 dust <- fread("output/all.bats.csv")
 
 
-allMod = lmer(log(total.inf) ~ sex*soc_ym  + sex*act_ym + sex*exp_hb + sex*act_hb + dawn.ta + (1|Trial), 
+allMod = lmer(log(total.inf) ~ sex*soc_ym  + sex*act_ym + 
+                sex*exp_hb + sex*act_hb + dawn.ta + (1|Trial), 
               data = dust)
 
 summary(allMod)
@@ -103,7 +105,7 @@ theme1 <- theme(legend.position = 'none',
                 panel.border = element_rect(colour = "black", fill=NA, size = 1))
 
 # plot permutation test results (red is observed, blue is expected)----
-png("figures/FigureS3.png", width = 6000, height = 3000, units = "px", res = 600)
+#png("figures/FigureS3.png", width = 6000, height = 3000, units = "px", res = 600)
 aa <- ggplot() +
   geom_histogram(data = exp[coef == "Sex"], 
                  aes(x = fit), color="black",fill="light grey") +
@@ -175,36 +177,36 @@ gg <- ggplot() +
                        paste("=",signif(mean(exp[coef == "Sex : Sociability (YM)"]$fit >= obs7),digits=2))))) +
   theme1
 hh <- ggplot() +
-  geom_histogram(data = exp[coef == "Sex : Exploration (HB)"], 
-                 aes(x = fit), color="black",fill="light grey") +
-  geom_vline(aes(xintercept = obs8), color="red", size=1) +
-  xlab(expression("Sex:Exploration PC2" [H], ")" )) +
-  ylab("Frequency") +
-  ggtitle(paste("H) p", 
-                ifelse(mean(exp[coef == "Sex : Exploration (HB)"]$fit >= obs8) ==0,paste(">",1/perms), 
-                       paste("=",signif(mean(exp[coef == "Sex : Exploration (HB)"]$fit <= obs8),digits=2))))) +
-  theme1
-
-ii <- ggplot() +
   geom_histogram(data = exp[coef == "Sex : Activity (YM)"], 
                  aes(x = fit), color="black",fill="light grey") +
-  geom_vline(aes(xintercept = obs7), color="red", size=1) +
+  geom_vline(aes(xintercept = obs8), color="red", size=1) +
   xlab(expression("Sex:Activity PC1" [Y], ")" )) +
   ylab("Frequency") +
+  ggtitle(paste("H) p", 
+                ifelse(mean(exp[coef == "Sex : Activity (YM)"]$fit >= obs8) ==0,paste("<",1/perms), 
+                       paste("=",signif(mean(exp[coef == "Sex : Activity (YM)"]$fit >= obs8),digits=2))))) +
+  theme1 
+
+ii <- ggplot() +
+  geom_histogram(data = exp[coef == "Sex : Exploration (HB)"], 
+                 aes(x = fit), color="black",fill="light grey") +
+  geom_vline(aes(xintercept = obs9), color="red", size=1) +
+  xlab(expression("Sex:Exploration PC2" [H], ")" )) +
+  ylab("Frequency") +
   ggtitle(paste("I) p", 
-                ifelse(mean(exp[coef == "Sex : Activity (YM)"]$fit >= obs7) ==0,paste("<",1/perms), 
-                       paste("=",signif(mean(exp[coef == "Sex : Activity (YM)"]$fit >= obs7),digits=2))))) +
+                ifelse(mean(exp[coef == "Sex : Exploration (HB)"]$fit >= obs9) ==0,paste(">",1/perms), 
+                       paste("=",signif(mean(exp[coef == "Sex : Exploration (HB)"]$fit <= obs9),digits=2))))) +
   theme1
 jj <- ggplot() +
   geom_histogram(data = exp[coef == "Sex : Activity (HB)"], 
                  aes(x = fit), color="black",fill="light grey") +
-  geom_vline(aes(xintercept = obs8), color="red", size=1) +
+  geom_vline(aes(xintercept = obs10), color="red", size=1) +
   xlab(expression("Sex:Activity PC1" [H], ")" )) +
   ylab("Frequency") +
   ggtitle(paste("J) p", 
-                ifelse(mean(exp[coef == "Sex : Activity (HB)"]$fit >= obs8) ==0,paste(">",1/perms), 
-                       paste("=",signif(mean(exp[coef == "Sex : Activity (HB)"]$fit <= obs8),digits=2))))) +
+                ifelse(mean(exp[coef == "Sex : Activity (HB)"]$fit >= obs10) ==0,paste(">",1/perms), 
+                       paste("=",signif(mean(exp[coef == "Sex : Activity (HB)"]$fit <= obs10),digits=2))))) +
   theme1
 
-grid.arrange(aa,bb,cc,dd,ee,ff,gg,hh, nrow = 2)
+grid.arrange(aa,bb,cc,dd,ee,ff,gg,hh,ii,jj, nrow = 2)
 dev.off()
