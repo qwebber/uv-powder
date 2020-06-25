@@ -1,7 +1,5 @@
 
 
-
-
 library(data.table)
 library(ggplot2)
 library(gridExtra)
@@ -9,7 +7,7 @@ library(gridExtra)
 dust <- fread("output/all.bats.csv")
 
 
-allMod = lmer(log(total.inf) ~ sex*soc_ym  + act_ym + sex*exp_hb + act_hb + dawn.ta + (1|Trial), 
+allMod = lmer(log(total.inf) ~ sex*soc_ym  + sex*act_ym + sex*exp_hb + sex*act_hb + dawn.ta + (1|Trial), 
               data = dust)
 
 summary(allMod)
@@ -26,6 +24,9 @@ obs5 <- fit$coefficients[6,1]
 obs6 <- fit$coefficients[7,1]  
 obs7 <- fit$coefficients[8,1]
 obs8 <- fit$coefficients[9,1]  
+obs9 <- fit$coefficients[10,1]
+obs10 <- fit$coefficients[11,1]  
+
 
 # now make null model (which makes the null hypothesis true in your data while keeping the structure realistic)
 
@@ -38,6 +39,8 @@ exp5 <- rep(NA, perms)
 exp6 <- rep(NA, perms)
 exp7 <- rep(NA, perms)
 exp8 <- rep(NA, perms)
+exp9 <- rep(NA, perms)
+exp10 <- rep(NA, perms)
 
 
 
@@ -46,18 +49,20 @@ for (i in 1:perms){
   dust[, fake.intensity := sample(total.inf), by = "Trial"]
   
   # fit model using fake y data
-  rfit <-summary(lmer(log(fake.intensity) ~ sex*soc_ym  + act_ym + 
-                        sex*exp_hb + act_hb + dawn.ta + (1|Trial), data= dust))
+  rfit <-summary(lmer(log(fake.intensity) ~ sex*soc_ym  + sex*act_ym + 
+                        sex*exp_hb + sex*act_hb + dawn.ta + (1|Trial), data= dust))
   
   # get the coefficient you want to test
-  exp1[i] <- rfit$coefficients[2,1]
-  exp2[i] <- rfit$coefficients[3,1] 
-  exp3[i] <- rfit$coefficients[4,1]
-  exp4[i] <- rfit$coefficients[5,1] 
-  exp5[i] <- rfit$coefficients[6,1]
-  exp6[i] <- rfit$coefficients[7,1] 
-  exp7[i] <- rfit$coefficients[8,1]
-  exp8[i] <- rfit$coefficients[9,1] 
+  exp1[i] <- rfit$coefficients[2,1]    # sex
+  exp2[i] <- rfit$coefficients[3,1]    # soc (YM)
+  exp3[i] <- rfit$coefficients[4,1]    # act (YM)
+  exp4[i] <- rfit$coefficients[5,1]    # exp (HB)
+  exp5[i] <- rfit$coefficients[6,1]    # act (HB)
+  exp6[i] <- rfit$coefficients[7,1]    # dawn.ta
+  exp7[i] <- rfit$coefficients[8,1]    # sex : soc (YM)
+  exp8[i] <- rfit$coefficients[9,1]    # sex : act (YM)
+  exp9[i] <- rfit$coefficients[10,1]   # sex : exp (HB)
+  exp10[i] <- rfit$coefficients[11,1]  # sex : act (HB)
   
 }
 
@@ -72,10 +77,12 @@ mean(exp5>=obs5)
 mean(exp6>=obs6)
 mean(exp7>=obs7)
 mean(exp8<=obs8)
+mean(exp9>=obs9)
+mean(exp10<=obs10)
 
 
 
-exp <- data.table(fit = c(exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8), 
+exp <- data.table(fit = c(exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8, exp9, exp10), 
                   coef = c(rep("Sex", 1000),
                            rep("Sociability (YM)", 1000), 
                            rep("Activity (YM)", 1000),
@@ -83,7 +90,9 @@ exp <- data.table(fit = c(exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8),
                            rep("Activity (HB)", 1000),
                            rep("Temperature", 1000),
                            rep("Sex : Sociability (YM)", 1000),
-                           rep("Sex : Exploration (HB)", 1000)))
+                           rep("Sex : Activity (YM)", 1000),
+                           rep("Sex : Exploration (HB)", 1000), 
+                           rep("Sex : Activity (HB)", 1000)))
 
 theme1 <- theme(legend.position = 'none', 
                 axis.title = element_text(size = 12, color = 'black'),
@@ -174,6 +183,27 @@ hh <- ggplot() +
   ggtitle(paste("H) p", 
                 ifelse(mean(exp[coef == "Sex : Exploration (HB)"]$fit >= obs8) ==0,paste(">",1/perms), 
                        paste("=",signif(mean(exp[coef == "Sex : Exploration (HB)"]$fit <= obs8),digits=2))))) +
+  theme1
+
+ii <- ggplot() +
+  geom_histogram(data = exp[coef == "Sex : Activity (YM)"], 
+                 aes(x = fit), color="black",fill="light grey") +
+  geom_vline(aes(xintercept = obs7), color="red", size=1) +
+  xlab(expression("Sex:Activity PC1" [Y], ")" )) +
+  ylab("Frequency") +
+  ggtitle(paste("I) p", 
+                ifelse(mean(exp[coef == "Sex : Activity (YM)"]$fit >= obs7) ==0,paste("<",1/perms), 
+                       paste("=",signif(mean(exp[coef == "Sex : Activity (YM)"]$fit >= obs7),digits=2))))) +
+  theme1
+jj <- ggplot() +
+  geom_histogram(data = exp[coef == "Sex : Activity (HB)"], 
+                 aes(x = fit), color="black",fill="light grey") +
+  geom_vline(aes(xintercept = obs8), color="red", size=1) +
+  xlab(expression("Sex:Activity PC1" [H], ")" )) +
+  ylab("Frequency") +
+  ggtitle(paste("J) p", 
+                ifelse(mean(exp[coef == "Sex : Activity (HB)"]$fit >= obs8) ==0,paste(">",1/perms), 
+                       paste("=",signif(mean(exp[coef == "Sex : Activity (HB)"]$fit <= obs8),digits=2))))) +
   theme1
 
 grid.arrange(aa,bb,cc,dd,ee,ff,gg,hh, nrow = 2)
