@@ -21,7 +21,7 @@ col = c("#1b9e77", "#1f78b4")
 
 png("figures/FigureS4.png", width = 7000, height = 3500, units = "px", res = 600)
 aa <- ggplot(dust, aes(act_hb, exp_hb)) +
-  geom_point(aes(color=sex)) +
+  geom_point(aes(color=sex), alpha = 0.5) +
   geom_smooth(method = "lm", se = F,
               color = "black") +
   ggtitle("A)") +
@@ -30,7 +30,7 @@ aa <- ggplot(dust, aes(act_hb, exp_hb)) +
   xlab(expression("Activity PC1" [H], ")" )) + 
   theme1
 bb <- ggplot(dust, aes(act_hb, act_ym)) +
-  geom_point(aes(color=sex)) +
+  geom_point(aes(color=sex), alpha = 0.5) +
   geom_smooth(method = "lm", se = F,
               color = "black") +
   ggtitle("B)") +
@@ -39,7 +39,7 @@ bb <- ggplot(dust, aes(act_hb, act_ym)) +
   xlab(expression("Activity PC1" [H], ")" )) + 
   theme1
 cc <- ggplot(dust, aes(act_hb, soc_ym)) +
-  geom_point(aes(color=sex)) +
+  geom_point(aes(color=sex), alpha = 0.5) +
   geom_smooth(method = "lm", se = F,
               color = "black") +
   ggtitle("C)") +
@@ -48,7 +48,7 @@ cc <- ggplot(dust, aes(act_hb, soc_ym)) +
   xlab(expression("Activity PC1" [H], ")" )) + 
   theme1
 dd <- ggplot(dust, aes(exp_hb, act_ym)) +
-  geom_point(aes(color=sex)) +
+  geom_point(aes(color=sex), alpha = 0.5) +
   geom_smooth(method = "lm", se = F,
               color = "black") +
   ggtitle("D)") +
@@ -57,7 +57,7 @@ dd <- ggplot(dust, aes(exp_hb, act_ym)) +
   xlab(expression("Exploration PC2" [H], ")" )) + 
   theme1
 ee <- ggplot(dust, aes(exp_hb, soc_ym)) +
-  geom_point(aes(color=sex)) +
+  geom_point(aes(color=sex), alpha = 0.5) +
   geom_smooth(method = "lm", se = F,
               color = "black") +
   ggtitle("E)") +
@@ -66,7 +66,7 @@ ee <- ggplot(dust, aes(exp_hb, soc_ym)) +
   xlab(expression("Exploration PC2" [H], ")" )) + 
   theme1
 ff <- ggplot(dust, aes(act_ym, soc_ym)) +
-  geom_point(aes(color=sex)) +
+  geom_point(aes(color=sex), alpha = 0.5) +
   geom_smooth(method = "lm", se = F,
               color = "black") +
   ggtitle("F)") +
@@ -75,7 +75,7 @@ ff <- ggplot(dust, aes(act_ym, soc_ym)) +
   xlab(expression("Activity PC1" [Y], ")" )) + 
   theme1
 gg <- ggplot(dust, aes(dawn.ta, act_hb)) +
-  geom_jitter(aes(color=sex), width = 1) +
+  geom_jitter(aes(color=sex), width = 1, alpha = 0.5) +
   geom_smooth(method = "lm", se = F,
               color = "black") +
   ggtitle("G)") +
@@ -84,7 +84,7 @@ gg <- ggplot(dust, aes(dawn.ta, act_hb)) +
   ylab(expression("Activity PC1" [H], ")" )) + 
   theme1
 hh <- ggplot(dust, aes(dawn.ta, exp_hb)) +
-  geom_jitter(aes(color=sex), width = 1) +
+  geom_jitter(aes(color=sex), width = 1, alpha = 0.5) +
   geom_smooth(method = "lm", se = F,
               color = "black") +
   ggtitle("H)") +
@@ -93,7 +93,7 @@ hh <- ggplot(dust, aes(dawn.ta, exp_hb)) +
   ylab(expression("Exploration PC2" [H], ")" )) + 
   theme1
 ii <- ggplot(dust, aes(dawn.ta, act_ym)) +
-  geom_jitter(aes(color=sex), width = 1) +
+  geom_jitter(aes(color=sex), width = 1, alpha = 0.5) +
   geom_smooth(method = "lm", se = F,
               color = "black") +
   ggtitle("I)") +
@@ -102,7 +102,7 @@ ii <- ggplot(dust, aes(dawn.ta, act_ym)) +
   ylab(expression("Activity PC1" [Y], ")" )) + 
   theme1
 jj <- ggplot(dust, aes(dawn.ta, soc_ym)) +
-  geom_jitter(aes(color=sex), width = 1) +
+  geom_jitter(aes(color=sex), width = 1, alpha = 0.5) +
   geom_smooth(method = "lm", se = F,
               color = "black") +
   ggtitle("J)") +
