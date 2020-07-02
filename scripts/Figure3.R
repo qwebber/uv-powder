@@ -4,6 +4,7 @@ library(data.table)
 library(ggplot2)
 library(gridExtra)
 library(effects)
+library(lme4)
 
 dust <- fread("output/all.bats.csv")
 
