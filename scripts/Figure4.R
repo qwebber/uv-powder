@@ -1,38 +1,36 @@
 
+
 library(data.table)
-library(lme4)
 library(ggplot2)
-library(broom)
-library(dplyr)
-library(dotwhisker)
+library(gridExtra)
+library(effects)
+library(lme4)
 
 dust <- fread("output/all.bats.csv")
 
 
-global = lmer(log(total.inf) ~ sex*act_hb + sex*exp_hb + 
-                sex*act_ym + sex*soc_ym  + dawn.ta + (1|Trial), 
+allMod = lmer(log(total.inf) ~ sex*soc_ym  + act_ym + sex*exp_hb + act_hb + dawn.ta + (1|Trial), 
               data = dust)
-summary(global)
 
-coef <- tidy(global, conf.int = TRUE)
+summary(allMod)
 
-png("figures/Figure2.png", width = 4000, height = 2500, units = "px", res = 600)
-dwplot(coef[1:11,], 
-       vline = geom_vline(xintercept = 0, colour = "black", linetype = 2)) %>% # plot line at zero _behind_ coefs
-  relabel_predictors(c(`sexM:exp_hb` = "Sex : Exploration (H)", 
-                       sexM = "Sex",   
-                       dawn.ta = "Temperature",
-                       act_ym = "Activity (Y)", 
-                       act_hb = "Activity (H)", 
-                       `sexM:act_hb` = "Sex : Activity (H)", 
-                       soc_ym = "Sociability (Y)", 
-                       `sexM:act_ym` = "Sex : Activity (Y)", 
-                       `sexM:soc_ym` = "Sex : Sociability (Y)", 
-                       exp_hb = "Exploration (H)")) +
-  scale_colour_manual(values = "grey60") +
-  xlab("Coefficient Estimate") + 
-  ylab("") +
-  geom_vline(xintercept = 0, colour = "black", linetype = 2) +
+estMod<-Effect(c("dawn.ta"), partial.residuals = T, allMod)
+predMod <- data.table(inf = estMod$fit, 
+                      ta = estMod$x, 
+                      lwr = estMod$lower,
+                      upr = estMod$upper)
+colnames(predMod) <- c("inf","ta", "lwr", "upr")
+
+png("figures/Figure3.png", width = 2500, height = 2500, units = "px", res = 600)
+ggplot() +
+  geom_jitter(data = dust, aes(dawn.ta, log(total.inf), col = "black"), alpha = 0.5, width = 1) +
+  geom_line(data = predMod, aes(ta, inf, col = "black"), lty = 1, size = 1.25) +
+  geom_line(data = predMod, aes(ta, upr, col = "black"), lty = 2, size = 0.5) +
+  geom_line(data = predMod, aes(ta, lwr, col = "black"), lty = 2, size = 0.5) +
+  ylab("log(Infection Intensity)") +
+  labs(x = expression(paste("Ambient Temperature at Dawn (",degree~C,")"))) +
+  scale_color_manual(values = "black") +
+  ylim(-6.5, 0) +
   theme(legend.position = 'none',
         legend.key = element_blank(),
         axis.title = element_text(size = 14, color = 'black'),
@@ -41,5 +39,3 @@ dwplot(coef[1:11,],
         panel.background = element_blank(), 
         panel.border = element_rect(colour = "black", fill=NA, size = 1))
 dev.off()
-
-
