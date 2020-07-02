@@ -32,7 +32,7 @@ colnames(predMod) <- c("inf","Sex" ,"exp", "lwr", "upr")
 
 col = c("#1b9e77", "#1f78b4")
 
-png("figures/Figure2.png", width = 5000, height = 2500, units = "px", res = 600)
+png("figures/Figure3.png", width = 5000, height = 2500, units = "px", res = 600)
 aa <- ggplot() +
   geom_point(data = dust[sex == "F"], aes(exp_hb, log(total.inf), col = "#1b9e77"), alpha = 0.5) +
   geom_line(data = predMod[Sex == "F"], aes(exp, inf, col = "#1b9e77"), lty = 1, size = 1.25) +
