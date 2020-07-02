@@ -4,6 +4,7 @@ library(lme4)
 library(ggplot2)
 library(dplyr)
 library(merTools)
+library(GGally)
 
 dust <- fread("output/all.bats.csv")
 p.zero <- fread("output/p.zero.csv")
@@ -32,9 +33,8 @@ dust[sex == "M"][, mean(total.inf), by = c("Trial")]
 dust[sex == "M"][, sd(total.inf), by = c("Trial")]
 
 
-## female transmitter; male acquirers 
-global = lmer(log(total.inf) ~ sex + act_hb + exp_hb + 
-                act_ym + soc_ym  + dawn.ta + (1|Trial), 
+global = lmer(log(total.inf) ~ sex*act_hb + sex*exp_hb + 
+                sex*act_ym + sex*soc_ym  + dawn.ta + (1|Trial), 
           data = dust)
 summary(global)
 
@@ -50,9 +50,8 @@ df <- merge(dust2, p.zero2, by = "Trial")
 df$sex_combo <- paste(dust2$sex, p.zero2$sex_pz, sep = "_")
 
 
-global2 <- lmer(log(total.inf) ~ sex_combo + act_hb + sex*exp_hb + 
-  act_ym + sex*soc_ym + sex_pz*act_hb_pz + sex_pz*exp_hb_pz + 
-  sex_pz*act_ym_pz + sex_pz*soc_ym_pz + dawn.ta + (1|Trial),  data = df)
+global2 <- lmer(log(total.inf) ~ sex_combo + act_hb*sex + sex*exp_hb + 
+  sex_pz*act_hb_pz + sex_pz*exp_hb_pz + dawn.ta + (1|Trial),  data = df)
 
 summary(global2)
 
