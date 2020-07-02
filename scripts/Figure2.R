@@ -23,10 +23,10 @@ pz2 <- tidy(pz)
 dwplot(list(pz, global))
 
 
-png("figures/Figure2.png", width = 4000, height = 2500, units = "px", res = 600)
+png("figures/Figure2.png", width = 5000, height = 3000, units = "px", res = 600)
 dwplot(list(pz, global),
-             vline = geom_vline(xintercept = 0, colour = "black", linetype = 2)) %>% # plot line at zero _behind_ coefs
-  relabel_predictors(c(sexM = "Sex", 
+             vline = geom_vline(xintercept = 0, colour = "black", linetype = 2))  + #%>% # plot line at zero _behind_ coefs
+        scale_y_discrete(labels = c(sexM = "Sex", 
                        dawn.ta = "Temperature",
                        act_hb = "Activity (H)", 
                        exp_hb = "Exploration (H)",
@@ -35,16 +35,24 @@ dwplot(list(pz, global),
                        `sexM:act_hb` = "Sex : Activity (H)", 
                        `sexM:exp_hb` = "Sex : Exploration (H)", 
                        `sexM:act_ym` = "Sex : Activity (Y)", 
-                       `sexM:soc_ym` = "Sex : Sociability (Y)",
-                       `sd_(Intercept).Trial` = "Variance", 
-                       `sd_Observation.Residual` = "Residual Variance"))+
-  scale_colour_manual(values = c("#66c2a5", "#fc8d62")) +
+                       `sexM:soc_ym` = "Sex : Sociability (Y)"), 
+                       limits = c("sexM:soc_ym",  "sexM:act_ym", 
+                                  "sexM:exp_hb", "sexM:act_hb", 
+                                  "soc_ym", "act_ym", 
+                                  "exp_hb", "act_hb", 
+                                  "dawn.ta", "sexM"
+                                  )) + 
+  
+  scale_colour_manual(labels = c("Acquisition model", 
+                                 "Transmission model"), 
+                      values = c("#66c2a5", "#fc8d62")) +
   xlab("Coefficient Estimate") + 
   ylab("") +
   geom_vline(xintercept = 0, colour = "black", linetype = 2) +
-  theme(legend.position = c(0.1,0.1),
+  theme(legend.position = c(0.2,0.1),
         legend.title = element_blank(),
         legend.key = element_blank(),
+        legend.text = element_text(size = 12),
         axis.title = element_text(size = 14, color = 'black'),
         axis.text = element_text(size = 12, color = 'black'),
         panel.grid.minor = element_blank(),
