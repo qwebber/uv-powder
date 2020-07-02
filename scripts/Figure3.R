@@ -20,7 +20,7 @@ predMod <- data.table(inf = estMod$fit,
                       upr = estMod$upper)
 colnames(predMod) <- c("inf","ta", "lwr", "upr")
 
-png("figures/Figure2.png", width = 2500, height = 2500, units = "px", res = 600)
+png("figures/Figure3.png", width = 2500, height = 2500, units = "px", res = 600)
 ggplot() +
   geom_jitter(data = dust, aes(dawn.ta, log(total.inf), col = "black"), alpha = 0.5, width = 1) +
   geom_line(data = predMod, aes(ta, inf, col = "black"), lty = 1, size = 1.25) +
