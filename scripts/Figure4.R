@@ -15,9 +15,6 @@ global = lmer(log(total.inf) ~ sex*act_hb + sex*exp_hb +
 summary(global)
 
 coef <- tidy(global, conf.int = TRUE)
-setDT(coef[1:11,])[order(estimate),]
-
-coef2 <- setDT(coef[1:11,])[order(estimate),]
 
 png("figures/Figure4.png", width = 4000, height = 2500, units = "px", res = 600)
 dwplot(coef[1:11,], 
