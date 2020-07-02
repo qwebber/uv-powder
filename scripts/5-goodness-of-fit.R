@@ -8,23 +8,18 @@ dust <- fread("output/all.bats.csv")
 
 
 # fit the negative binomial distribution
-fit <- fitdist(dust$total.inf, "gamma")
+fit <- fitdist(dust$total.inf*10, "gamma")
 
 set.seed(13579)
 N <- 10000
 
-y <- rgamma(N, shape = fit$estimate[1], scale = fit$estimate[2])
-hist(y, breaks = 100)
-hist(dust$total.inf)
+y <- dnbinom(N, size = 1.23, prob = 0.1)
+hist(y)
+hist(dust$total.inf*10)
 
-x_dgamma <- seq(0, 1, by = 0.02) 
-y_dgamma <- dgamma(x_dgamma, shape = 5)  
-hist(y_dgamma)
-hist(dust$total.inf)
+ks.test(dust$total.inf*10, y)
 
-ks.test(dust$total.inf, y)
-
-
+rnegbin()
 
 hist(y)
 
