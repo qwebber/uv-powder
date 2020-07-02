@@ -16,7 +16,7 @@ summary(global)
 
 coef <- tidy(global, conf.int = TRUE)
 
-png("figures/Figure4.png", width = 4000, height = 2500, units = "px", res = 600)
+png("figures/Figure2.png", width = 4000, height = 2500, units = "px", res = 600)
 dwplot(coef[1:11,], 
        vline = geom_vline(xintercept = 0, colour = "black", linetype = 2)) %>% # plot line at zero _behind_ coefs
   relabel_predictors(c(`sexM:exp_hb` = "Sex : Exploration (H)", 
