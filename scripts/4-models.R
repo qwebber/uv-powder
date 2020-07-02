@@ -32,7 +32,7 @@ dust[sex == "F"][, sd(total.inf), by = c("Trial")]
 dust[sex == "M"][, mean(total.inf), by = c("Trial")]
 dust[sex == "M"][, sd(total.inf), by = c("Trial")]
 
-
+## global model with all interactions
 global = lmer(log(total.inf) ~ sex*act_hb + sex*exp_hb + 
                 sex*act_ym + sex*soc_ym  + dawn.ta + (1|Trial), 
           data = dust)
@@ -40,32 +40,32 @@ summary(global)
 
 ## all data in same model
 
-p.zero2 <- p.zero[,c("Trial","act_hb", "exp_hb", "act_ym", "soc_ym", "sex")]
-colnames(p.zero2) <- c("Trial", "act_hb_pz", "exp_hb_pz", 
-                       "act_ym_pz", "soc_ym_pz" ,"sex_pz")
-dust2 <- dust[,c("Trial","total.inf" ,"act_hb", "exp_hb", 
-                 "act_ym", "soc_ym", "sex", "dawn.ta" ,"ID")]
+p.zero$total.inf <- p.zero$total.inf.F + p.zero$total.inf.M
 
-df <- merge(dust2, p.zero2, by = "Trial")
-df$sex_combo <- paste(dust2$sex, p.zero2$sex_pz, sep = "_")
+pz <- lm(log(total.inf) ~ sex + act_hb + exp_hb + 
+             act_ym + soc_ym  + dawn.ta, 
+           data = p.zero)
 
+summary(pz)
 
-global2 <- lmer(log(total.inf) ~ sex_combo + act_hb*sex + sex*exp_hb + 
-  sex_pz*act_hb_pz + sex_pz*exp_hb_pz + dawn.ta + (1|Trial),  data = df)
+pz2 <- tidy(pz)
 
-summary(global2)
-
-ggplot(df, aes(soc_ym_pz, log(total.inf), color = sex)) +
-  geom_jitter() +
-  geom_smooth(method = "lm", se = F)
-
-ggplot(df, aes(sex_combo, log(total.inf), fill = sex_pz)) +
-  geom_boxplot(notch = TRUE,
-               outlier.color = NA,
-               lwd = 0.6,
-               alpha = 0.25) +
-  geom_jitter(aes(color = sex_pz), shape = 16,
-              position = position_jitterdodge(0.3),
-              size = 2,
-              alpha = 0.6) 
-  theme1
+dwplot(pz2, 
+       vline = geom_vline(xintercept = 0, colour = "black", linetype = 2)) %>% # plot line at zero _behind_ coefs
+  relabel_predictors(c(act_ym = "Activity (Y)", 
+                       soc_ym = "Sociability (Y)", 
+                       dawn.ta = "Temperature",
+                       act_hb = "Activity (H)", 
+                       sexM = "Sex",   
+                       exp_hb = "Exploration (H)")) +
+  scale_colour_manual(values = "grey60") +
+  xlab("Coefficient Estimate") + 
+  ylab("") +
+  geom_vline(xintercept = 0, colour = "black", linetype = 2) +
+  theme(legend.position = 'none',
+        legend.key = element_blank(),
+        axis.title = element_text(size = 14, color = 'black'),
+        axis.text = element_text(size = 12, color = 'black'),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        panel.border = element_rect(colour = "black", fill=NA, size = 1))
