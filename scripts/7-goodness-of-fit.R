@@ -2,14 +2,29 @@
 library(data.table)
 library(ggplot2)
 library(gridExtra)
+library(fitdistrplus)
 
 dust <- fread("output/all.bats.csv")
 
-num_of_samples = 100000
-y <- rgamma(num_of_samples, shape = 1, scale = 3)
-hist(y)
+
+# fit the negative binomial distribution
+fit <- fitdist(dust$total.inf, "gamma")
+
+set.seed(13579)
+N <- 10000
+
+y <- rgamma(N, shape = fit$estimate[1], scale = fit$estimate[2])
+hist(y, breaks = 100)
+hist(dust$total.inf)
+
+x_dgamma <- seq(0, 1, by = 0.02) 
+y_dgamma <- dgamma(x_dgamma, shape = 5)  
+hist(y_dgamma)
+hist(dust$total.inf)
 
 ks.test(dust$total.inf, y)
+
+
 
 hist(y)
 
@@ -20,7 +35,7 @@ n <- nrow(dust)
 
 
 png("figures/FigureS2.png", width = 4000, height = 2500, units = "px", res = 600)
-ggplot(dust) +
+aa <- ggplot(dust) +
   geom_histogram(aes(total.inf), binwidth = 0.05, fill = "grey", color = "black") +
   ylab("Frequency") +
   xlab("Infection Intensity") +
@@ -49,3 +64,30 @@ bb <- ggplot(dust, aes(log(total.inf))) +
 grid.arrange(aa,bb,nrow = 1)
 dev.off()
 
+
+hist(dust$total.inf, prob=TRUE, breaks=145)
+
+# load library
+library(fitdistrplus)
+
+# fit the negative binomial distribution
+fit <- fitdist(dust$total.inf, "gamma")
+
+# get the fitted densities. mu and size from fit.
+fitG <- dgamma(1:143, shape=1.231371, rate=7.847440)
+
+# add fitted line (blue) to histogram
+lines(fitG, lwd="3", col="blue")
+
+# Goodness of fit with the chi squared test  
+# get the frequency table
+t <- table(round(dust$total.inf, 1))   
+
+# convert to dataframe
+df <- as.data.frame(t)
+
+# get frequencies
+observed_freq <- df$Freq
+
+# perform the chi-squared test
+ks.test(dust$total.inf, fitG)
