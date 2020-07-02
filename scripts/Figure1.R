@@ -61,6 +61,7 @@ bb <- ggplot() +
   scale_color_manual(values = "#1f78b4") +
   ggtitle("B) Males") +
   ylim(-6.5, 0) +
+  xlim(-2.5, 3.5) +
   theme(legend.position = 'none',
         legend.key = element_blank(),
         axis.title = element_text(size = 14, color = 'black'),
