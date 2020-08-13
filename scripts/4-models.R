@@ -39,3 +39,5 @@ global = lmer(log(total.inf) ~ sex*act_hb + sex*exp_hb +
                 sex*act_ym + sex*soc_ym  + dawn.ta + (1|Trial), 
           data = dust)
 summary(global)
+
+piecewiseSEM::rsquared(global)
