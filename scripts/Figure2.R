@@ -7,6 +7,7 @@ library(dplyr)
 library(dotwhisker)
 
 dust <- fread("output/all.bats.csv")
+p.zero <- fread("output/p.zero.csv")
 
 ## Acquisition model
 global = lmer(log(total.inf) ~ sex*act_hb + sex*exp_hb + 
@@ -15,9 +16,10 @@ global = lmer(log(total.inf) ~ sex*act_hb + sex*exp_hb +
 coef <- tidy(global, conf.int = TRUE)
 
 ## Transmission model
-pz <- lm(log(total.inf) ~ sex + act_hb + exp_hb + 
+pz <- lm(log(total.inf.M + total.inf.F) ~ sex + act_hb + exp_hb + 
            act_ym + soc_ym  + dawn.ta, 
          data = p.zero)
+summary(pz)
 pz2 <- tidy(pz)
 
 dwplot(list(pz, global))
