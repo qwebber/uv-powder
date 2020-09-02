@@ -45,8 +45,8 @@ dwplot(list(pz, global),
                                   "dawn.ta", "sexM"
                                   )) + 
   
-  scale_colour_manual(labels = c("Acquisition model", 
-                                 "Transmission model"), 
+  scale_colour_manual(labels = c("Transmission model", 
+                                 "Acquisition model"), 
                       values = c("#66c2a5", "#fc8d62")) +
   xlab("Coefficient Estimate") + 
   ylab("") +

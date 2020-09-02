@@ -53,7 +53,7 @@ chisq.test(rbind(negbin$Frequency,negbin2$Frequency))
 
 
 png("figures/Figure1.png", width = 8000, height = 4000, units = "px", res = 600)
-aa <- 
+
   ggplot(DT2) +
   geom_bar(aes(y=Frequency, x = factor(N), fill=type), 
            color = "black",
